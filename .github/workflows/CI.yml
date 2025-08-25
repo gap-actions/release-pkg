@@ -19,7 +19,7 @@ jobs:
       # the order of the checkout actions is important because all contents of
       # the target folder of the checkout action is removed
       - name: "Clone the Example package"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: gap-packages/example
 
