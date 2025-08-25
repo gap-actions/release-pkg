@@ -1,3 +1,4 @@
+---
 name: "Release GAP package"
 description: "Makes a release of the GAP package on GitHub, with archives and manuals as assets"
 inputs:
