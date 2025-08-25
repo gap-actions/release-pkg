@@ -5,6 +5,10 @@ inputs:
     description: "Set to true to not push the release to GitHub"
     required: false
     default: "false"
+  release-script:
+    description: "Path to custom release script"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -14,6 +18,13 @@ runs:
       run: |
         gap -A -q -c 'QuitGap(ValidatePackageInfo("PackageInfo.g"));'
 
+    - name: "Create assets folder"
+      shell: bash
+      run: |
+        ASSETS=$RUNNER_TEMP/assets
+        mkdir -p $ASSETS
+        echo "ASSETS=$ASSETS" >> "$GITHUB_ENV"
+
     - name: "Generate package-info.json"
       shell: bash
       run: |
@@ -22,10 +33,11 @@ runs:
             echo "Could not create package-info.json"
             exit 1
         fi
-        echo "ASSETS=package-info.json" >> "$GITHUB_ENV"
+        mv package-info.json $ASSETS
         
     - name: "Read data from package-info.json"
       shell: bash
+      working-directory: ${{ env.ASSETS }}
       run: |
         TMP=($(cat package-info.json | jq -r '.ArchiveURL' | tr "/" " "))
         if [ "${#TMP[@]}" -eq 8 ] &&
@@ -44,16 +56,22 @@ runs:
         echo "ARCHIVE_FORMATS=$(cat package-info.json | jq -r '.ArchiveFormats' | tr "," " ")" >> "$GITHUB_ENV"
         echo "DOCS=$(cat package-info.json | jq -r '.PackageDoc[].PDFFile' | tr "\n" " ")" >> "$GITHUB_ENV"
 
-    - name: "Make copy in subfolder"
+        case "$VERSION" in
+          *dev)
+            echo "Must not use 'dev' versions for package releases"
+            exit 1
+            ;;
+        esac
+
+    - name: "Make copy of package"
       shell: bash
       run: |
-        shopt -s extglob
-        mkdir -p "$BASENAME"
-        cp -r !($BASENAME|package-info.json) "$BASENAME"
+        mkdir -p "$RUNNER_TEMP/$BASENAME"
+        cp -r * "$RUNNER_TEMP/$BASENAME"
         
     - name: "Cleanup before making archives"
       shell: bash
-      working-directory: ${{ env.BASENAME }}
+      working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
       run: | 
          echo "::group:: Cleanup git and github related files"
          rm -rvf .git* .hg* .cvs* .circleci
@@ -68,43 +86,47 @@ runs:
          echo "::group:: Cleanup LaTeX auxiliary files"
          find doc \( -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.brf' -o -name '*.idx' -o -name '*.ilg' -o -name '*.ind' -o -name '*.log' -o -name '*.out' -o -name '*.pnr' -o -name '*.toc' -o -name '*.tst' \) -exec rm -f {} +
 
+    - name: "Check for release script"
+      shell: bash
+      working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
+      if: ${{ inputs.release-script != '' }}
+      run : |
+        if [ ! -f "${{ inputs.release-script }}" ] ; then
+          echo "could not find release script ${{ inputs.release-script }}"
+          exit 1
+        fi
+        . "${{ inputs.release-script }}"
+        # TODO: check for .release file instead?
+        
     - name: "Create archives"
       shell: bash
+      working-directory: ${{ runner.temp }}
       run: |
         for EXT in $ARCHIVE_FORMATS ; do
             ARCHIVENAME=$BASENAME$EXT
             echo "Creating $ARCHIVENAME ..."
             case $EXT in
-            .tar.gz)  tar cf - "$BASENAME" | gzip -9c > "$ARCHIVENAME" ;;
-            .tar.bz2) tar cf - "$BASENAME" | bzip2 -9c > "$ARCHIVENAME" ;;
-            .zip)     zip -r9 --quiet "$ARCHIVENAME" "$BASENAME" ;;
+            .tar.gz)  tar cf - "$BASENAME" | gzip -9c > "$ASSETS/$ARCHIVENAME" ;;
+            .tar.bz2) tar cf - "$BASENAME" | bzip2 -9c > "$ASSETS/$ARCHIVENAME" ;;
+            .zip)     zip -r9 --quiet "$ASSETS/$ARCHIVENAME" "$BASENAME" ;;
             *)
                 echo "Unsupported archive format $EXT"
                 exit 1
                 ;;
             esac
-            if [ ! -f "$ARCHIVENAME" ] ; then
+            if [ ! -f "$ASSETS/$ARCHIVENAME" ] ; then
                 echo "Failed at creating "$ARCHIVENAME""
                 exit 1
             fi
             echo "Created $ARCHIVENAME"
-            ASSETS="$ASSETS\n$ARCHIVENAME"
         done
-        echo -e "ASSETS<<EOF\n$ASSETS\nEOF" >> "$GITHUB_ENV"
 
     - name: "Copy manual(s)"
       shell: bash
       run: |
         for DOC in $DOCS ; do
-            DOCFILE=$(basename $DOC)
-            cp $DOC $DOCFILE
-            if [ ! -f "$DOCFILE" ] ; then
-                echo "Failed at copying $DOCFILE"
-                exit 1
-            fi
-            ASSETS="$ASSETS\n$DOCFILE"
+            cp $DOC $ASSETS
         done
-        echo -e "ASSETS<<EOF\n$ASSETS\nEOF" >> "$GITHUB_ENV"
 
     - name: "Make GitHub release"
       uses: softprops/action-gh-release@v2
@@ -114,12 +136,12 @@ runs:
         name: "${{ env.PKGNAME }} ${{ env.VERSION }}"
         fail_on_unmatched_files: true
         tag_name: "${{ env.TAG }}"
-        files: ${{ env.ASSETS }}
+        files: ${{ env.ASSETS }}/*
 
     - name: "Upload the release"
       uses: actions/upload-artifact@v4
       if: ${{ inputs.dry-run == 'true' }}
       with:
         name: "Release_for_${{ env.PKGNAME }}_${{ env.VERSION }}"
-        path: ${{ env.ASSETS }}
+        path: ${{ env.ASSETS }}/*
         if-no-files-found: error
