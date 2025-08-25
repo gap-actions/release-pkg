@@ -76,6 +76,7 @@ runs:
       run: | 
          echo "::group:: Cleanup git and github related files"
          rm -rvf .git* .hg* .cvs* .circleci
+         echo "::group:: Cleanup codecov, travis, azure-pipelines"
          rm -fv .codecov.* .travis.* .appveyor.* azure-pipelines.*
          rm -fv .gaplint.*
          rm -fv requirements.txt
