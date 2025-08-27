@@ -102,6 +102,18 @@ runs:
         fi
         . "${{ inputs.release-script }}"
         # TODO: do we need a special case for a .release file, like in ReleaseTools?
+
+    - name: "Run autogen.sh"
+      shell: bash
+      working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
+      if: ${{ inputs.release-script != '' }}
+      run : |
+        if [ -x autogen.sh ] ; then
+          sudo apt-get install autoconf automake build-essential cmake --yes
+          echo "Generating build system files"
+          sh autogen.sh
+          rm -rf autom4te.cache
+        fi
         
     - name: "Create archives"
       shell: bash
