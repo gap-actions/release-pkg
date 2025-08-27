@@ -64,6 +64,9 @@ runs:
             ;;
         esac
 
+    # We make a copy of the current directory to build the release from, because
+    # the next step will remove files/folders that may be necessary for subsequent
+    # actions
     - name: "Make copy of package"
       shell: bash
       run: |
