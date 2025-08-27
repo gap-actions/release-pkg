@@ -25,7 +25,7 @@ jobs:
     steps:
       # the order of the checkout actions is important because all contents of
       # the target folder of the checkout action is removed
-      - name: "Clone the Example package"
+      - name: "Clone the package"
         uses: actions/checkout@v5
         with:
           repository: ${{ matrix.package }}
