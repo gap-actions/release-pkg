@@ -6,10 +6,6 @@ inputs:
     description: "Set to true to not push the release to GitHub"
     required: false
     default: "false"
-  release-script:
-    description: "Path to custom release script"
-    required: false
-    default: ""
 
 runs:
   using: "composite"
@@ -90,18 +86,6 @@ runs:
 
          echo "::group:: Cleanup LaTeX auxiliary files"
          find doc \( -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.brf' -o -name '*.idx' -o -name '*.ilg' -o -name '*.ind' -o -name '*.log' -o -name '*.out' -o -name '*.pnr' -o -name '*.toc' -o -name '*.tst' \) -exec rm -f {} +
-
-    - name: "Check for and execute release script"
-      shell: bash
-      working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
-      if: ${{ inputs.release-script != '' }}
-      run : |
-        if [ ! -f "${{ inputs.release-script }}" ] ; then
-          echo "could not find release script ${{ inputs.release-script }}"
-          exit 1
-        fi
-        . "${{ inputs.release-script }}"
-        # TODO: do we need a special case for a .release file, like in ReleaseTools?
 
     - name: "Run autogen.sh"
       shell: bash
