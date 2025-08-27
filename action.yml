@@ -93,7 +93,7 @@ runs:
       if: ${{ inputs.release-script != '' }}
       run : |
         if [ -x autogen.sh ] ; then
-          sudo apt-get install autoconf automake build-essential cmake --yes
+          sudo apt-get install autoconf automake build-essential --yes
           echo "Generating build system files"
           sh autogen.sh
           rm -rf autom4te.cache
