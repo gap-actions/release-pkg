@@ -15,16 +15,23 @@ jobs:
   test:
     name: "Test the pkg-release action"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: "gap-actions/ActionTestGAPDocPackage"
+          - package: "gap-actions/ActionTestOldDocPackage"
+    
     steps:
       # the order of the checkout actions is important because all contents of
       # the target folder of the checkout action is removed
       - name: "Clone the Example package"
         uses: actions/checkout@v5
         with:
-          repository: gap-packages/example
+          repository: ${{ matrix.package }}
 
       - name: "Check out this repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: .this-action/
 
@@ -33,12 +40,12 @@ jobs:
         with:
           GAP_PKGS_TO_BUILD: json
           
-      - name: "Build Example's manual"
+      - name: "Build manual"
         uses: gap-actions/build-pkg-docs@v1
         with:
           use-latex: true
 
-      - name: "Make a release for Example"
+      - name: "Make a release"
         uses: ./.this-action/
         with:
           dry-run: true
