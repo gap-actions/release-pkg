@@ -24,7 +24,7 @@ runs:
       run: |
         ASSETS=$RUNNER_TEMP/assets
         mkdir -p $ASSETS
-        echo "ASSETS=$ASSETS" >> "$GITHUB_ENV"
+        echo "ASSETS=$ASSETS" | tee -a "$GITHUB_ENV"
 
     - name: "Generate package-info.json"
       shell: bash
@@ -46,16 +46,16 @@ runs:
            [ "${TMP[1]}" = "github.com" ] &&
            [ "${TMP[4]}" = "releases" ] &&
            [ "${TMP[5]}" = "download" ]; then
-            echo "TAG=${TMP[6]}" >> "$GITHUB_ENV"
-            echo "BASENAME=${TMP[7]}" >> "$GITHUB_ENV"
+            echo "TAG=${TMP[6]}" | tee -a "$GITHUB_ENV"
+            echo "BASENAME=${TMP[7]}" | tee -a "$GITHUB_ENV"
         else
             echo "ArchiveURL in PackageInfo.g does not point to a GitHub release"
             exit 1
         fi
-        echo "PKGNAME=$(cat package-info.json | jq -r '.PackageName')" >> "$GITHUB_ENV"
-        echo "VERSION=$(cat package-info.json | jq -r '.Version')" >> "$GITHUB_ENV"
-        echo "ARCHIVE_FORMATS=$(cat package-info.json | jq -r '.ArchiveFormats' | tr "," " ")" >> "$GITHUB_ENV"
-        echo "DOCS=$(cat package-info.json | jq -r '.PackageDoc[].PDFFile' | tr "\n" " ")" >> "$GITHUB_ENV"
+        echo "PKGNAME=$(cat package-info.json | jq -r '.PackageName')" | tee -a "$GITHUB_ENV"
+        echo "VERSION=$(cat package-info.json | jq -r '.Version')" | tee -a "$GITHUB_ENV"
+        echo "ARCHIVE_FORMATS=$(cat package-info.json | jq -r '.ArchiveFormats' | tr "," " ")" | tee -a "$GITHUB_ENV"
+        echo "DOCS=$(cat package-info.json | jq -r '.PackageDoc[].PDFFile' | tr "\n" " ")" | tee -a "$GITHUB_ENV"
 
         case "$VERSION" in
           *dev)
