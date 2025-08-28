@@ -9,7 +9,7 @@ package.
 It creates release archives and publishes them in a GitHub release.
 
 It is recommended to create a separate YML file inside the
-`.github/workflows` folder of your package containing a workflow
+`.github/workflows` folder of your package, containing a workflow
 that calls this action. By setting the trigger to `workflow_dispatch`,
 you can then manually create a release from the "Actions" tab of your
 repository.
@@ -17,13 +17,16 @@ repository.
 
 ### Examples
 
-See below for a minimal example to run this action.
+Examples of actual GAP packages using this action are
+[aclib](https://github.com/gap-packages/aclib) and
+[polycyclic](https://github.com/gap-packages/polycyclic).
+
+Below is a minimal example of a workflow using this action.
 
 #### Minimal example
 ```yaml
 name: Release
 
-# Trigger the workflow on workflow dispatch
 on:
   workflow_dispatch:
 
@@ -50,7 +53,6 @@ It also updates the GitHub Pages of the package after making the release.
 ```yaml
 name: Release
 
-# Trigger the workflow on workflow dispatch
 on:
   workflow_dispatch:
     inputs:
