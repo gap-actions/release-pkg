@@ -14,6 +14,14 @@ that calls this action. By setting the trigger to `workflow_dispatch`,
 you can then manually create a release from the "Actions" tab of your
 repository.
 
+### Inputs
+
+All of the following inputs are optional.
+
+- `dry-run`:
+  - Set to `true` to create an archive containing the release
+    instead of publishing it on GitHub.
+  - default: `false`
 
 ### Examples
 
