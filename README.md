@@ -57,7 +57,7 @@ jobs:
 #### Larger example
 
 The following example adds a boolean input to test the release without actually publishing it on GitHub.
-It also updates the GitHub Pages of the package after making the release.
+It also uses the `update-gh-pages` action to update the GitHub Pages of the package after making the release.
 ```yaml
 name: Release
 
