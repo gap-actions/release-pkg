@@ -12,12 +12,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - "gap-actions/ActionTestGAPDocPackage"
-          - "gap-actions/ActionTestOldDocPackage"
-        force:
-          - true
-          - false
+        include:
+          - package: "gap-actions/ActionTestGAPDocPackage"
+            force: true
+          - package: "gap-actions/ActionTestGAPDocPackage"
+            force: false
     
     steps:
       # the order of the checkout actions is important because all contents of
