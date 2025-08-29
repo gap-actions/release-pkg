@@ -30,6 +30,12 @@ jobs:
         with:
           repository: ${{ matrix.package }}
 
+      - name: "Fake the package's date"
+        shell: bash
+        run: |
+          DATE=$(date +%d/%m/%Y)
+          sed -i -E "s|(Date[[:space:]]*:?=[[:space:]]*['\"]).*(['\"])|\1${DATE}\2|" "PackageInfo.g"
+
       - name: "Check out this repository"
         uses: actions/checkout@v5
         with:
