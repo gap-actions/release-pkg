@@ -15,7 +15,7 @@ jobs:
         include:
           - package: "gap-actions/ActionTestGAPDocPackage"
             force: true
-          - package: "gap-actions/ActionTestGAPDocPackage"
+          - package: "gap-actions/ActionTestOldDocPackage"
             force: false
     
     steps:
