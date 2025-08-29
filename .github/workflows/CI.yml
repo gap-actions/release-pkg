@@ -4,12 +4,6 @@ on:
   pull_request:
   push:
   workflow_dispatch:
-    inputs:
-      dry-run:
-        description: "Set to true to prevent actually making a release"
-        type: boolean
-        required: false
-        default: false
 
 jobs:
   test:
@@ -18,9 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - package: "gap-actions/ActionTestGAPDocPackage"
-          - package: "gap-actions/ActionTestOldDocPackage"
+        package:
+          - "gap-actions/ActionTestGAPDocPackage"
+          - "gap-actions/ActionTestOldDocPackage"
+        force:
+          - true
+          - false
     
     steps:
       # the order of the checkout actions is important because all contents of
@@ -32,6 +29,7 @@ jobs:
 
       - name: "Fake the package's date so it does not get rejected later on"
         shell: bash
+        if: ${{ !matrix.force }}
         run: |
           DATE=$(date +%d/%m/%Y)
           sed -i -E "s|(Date[[:space:]]*:?=[[:space:]]*['\"]).*(['\"])|\1${DATE}\2|" "PackageInfo.g"
@@ -55,3 +53,4 @@ jobs:
         uses: ./.this-action/
         with:
           dry-run: true
+          force: ${{ matrix.force }}
