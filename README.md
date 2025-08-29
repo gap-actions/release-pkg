@@ -50,6 +50,11 @@ on:
         type: boolean
         required: false
         default: false
+      force:
+        description: "Set to true to allow overwriting an earlier release"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   release:
@@ -67,6 +72,7 @@ jobs:
       - uses: gap-actions/release-pkg@v1
         with:
           dry-run: ${{ inputs.dry-run }}
+          force: ${{ inputs.force }}
 ```
 
 ## Contact
