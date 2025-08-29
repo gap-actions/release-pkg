@@ -75,12 +75,12 @@ on:
   workflow_dispatch:
     inputs:
       dry-run:
-        description: "Do not upload the release to GitHub"
+        description: "Set to true to create an archive containing the release instead of publishing it on GitHub"
         type: boolean
         required: false
         default: false
       force:
-        description: "Set to true to allow overwriting an existing release"
+        description: "Set to true to allow this action to overwrite an existing release, and to make a release with an incorrect date"
         type: boolean
         required: false
         default: false
