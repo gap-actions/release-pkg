@@ -7,7 +7,7 @@ inputs:
     required: false
     default: "false"
   force:
-    description: "Set to true to allow overwriting an earlier release"
+    description: "Set to true to allow overwriting an earlier release and releasing with an incorrect date"
     required: false
     default: "false"
 
@@ -83,6 +83,7 @@ runs:
 
     - name: "Verify the date"
       shell: bash
+      if: ${{ inputs.force != 'true' }}
       run: |
         # Convert DD/MM/YYYY to YYYY-MM-DD
         if [[ "$DATE" =~ ^[0-9]{2}/[0-9]{2}/[0-9]{4}$ ]]; then
