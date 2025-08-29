@@ -30,7 +30,7 @@ jobs:
         with:
           repository: ${{ matrix.package }}
 
-      - name: "Fake the package's date"
+      - name: "Fake the package's date so it does not get rejected later on"
         shell: bash
         run: |
           DATE=$(date +%d/%m/%Y)
