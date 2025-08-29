@@ -6,10 +6,15 @@ inputs:
     description: "Set to true to not push the release to GitHub"
     required: false
     default: "false"
+  force:
+    description: "Set to true to allow overwriting an earlier release"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
   steps:
+  
     - name: "Validate PackageInfo.g"
       shell: bash
       run: |
