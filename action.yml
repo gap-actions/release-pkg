@@ -74,7 +74,7 @@ runs:
         TOMORROW=$(date -d "tomorrow" +%Y-%m-%d)
 
         if [[ "$DATE" != "$TODAY" && "$DATE" != "$YESTERDAY" && "$DATE" != "$TOMORROW" ]]; then
-          echo "Date found in PackageInfo.g ($DATE) does not match current date (±1 day)."
+          echo "Date found in PackageInfo.g ($DATE) does not match current date ($TODAY) up to ±1 day."
           exit 1
         fi
 
