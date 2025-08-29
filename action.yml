@@ -6,6 +6,10 @@ inputs:
     description: "Set to true to not push the release to GitHub"
     required: false
     default: "false"
+  force:
+    description: "Set to true to allow overwriting an earlier release"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -132,6 +136,7 @@ runs:
         body: "Release for ${{ env.PKGNAME }}"
         name: "${{ env.PKGNAME }} ${{ env.VERSION }}"
         fail_on_unmatched_files: true
+        overwrite_files: "${{ inputs.force }}"
         tag_name: "${{ env.TAG }}"
         files: ${{ env.ASSETS }}/*
 
