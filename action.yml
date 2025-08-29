@@ -71,11 +71,11 @@ runs:
         GIT_RELS_JSON=$(wget --header="Authorization: Bearer ${{ github.token }}" -qO- "https://api.github.com/repos/${{ github.repository }}/releases")
         GIT_RELS=$(echo "$GIT_RELS_JSON" | jq -r '.[].tag_name' | sort -V)
         if echo "$GIT_RELS" | grep -q "^${TAG}$"; then
-          echo "Tag $TAG already in use for a release."
+          echo "Tag $TAG is already in use for a release."
           if [[ "${{ inputs.force }}" == "true" ]] ; then
             echo "Forcing update of existing release."
           else
-            echo "If you want to overwrite the existing release, re-run this action with `force` set to `true`."
+            echo "If you want to overwrite this existing release, re-run this action with the 'force' input set to 'true'."
             exit 1
           fi
         fi
@@ -152,7 +152,6 @@ runs:
         body: "Release for ${{ env.PKGNAME }}"
         name: "${{ env.PKGNAME }} ${{ env.VERSION }}"
         fail_on_unmatched_files: true
-        overwrite_files: "${{ inputs.force }}"
         tag_name: "${{ env.TAG }}"
         files: ${{ env.ASSETS }}/*
 
