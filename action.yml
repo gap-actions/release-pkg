@@ -130,7 +130,7 @@ runs:
         done
 
     - name: "Make GitHub release"
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@master
       if: ${{ inputs.dry-run == 'false' }}
       with:
         body: "Release for ${{ env.PKGNAME }}"
