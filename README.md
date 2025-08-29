@@ -14,6 +14,11 @@ that calls this action. By setting the trigger to `workflow_dispatch`,
 you can then manually create a release from the "Actions" tab of your
 repository.
 
+By default, this action will fail if there already exists a release
+with the same version number, or if the date in `PackageInfo.g` is more
+than 1 day off from the current date. These safety checks can be turned
+off using the `force` input.
+
 ### Inputs
 
 All of the following inputs are optional.
