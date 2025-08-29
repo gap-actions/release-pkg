@@ -29,7 +29,7 @@ All of the following inputs are optional.
   - default: `false`
 - `force`:
   - Set to `true` to allow this action to overwrite an existing
-    release, and to make a release with an incorrect date"
+    release, and to make a release with an incorrect date
   - default: `false`
 
 ### Examples
