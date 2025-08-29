@@ -52,6 +52,7 @@ runs:
         echo "VERSION=$(cat package-info.json | jq -r '.Version')" | tee -a "$GITHUB_ENV"
         echo "ARCHIVE_FORMATS=$(cat package-info.json | jq -r '.ArchiveFormats' | tr "," " ")" | tee -a "$GITHUB_ENV"
         echo "DOCS=$(cat package-info.json | jq -r '.PackageDoc[].PDFFile' | tr "\n" " ")" | tee -a "$GITHUB_ENV"
+        echo "DATE=$(cat package-info.json | jq -r '.Date')" | tee -a "$GITHUB_ENV"
 
         case "$VERSION" in
           *dev)
@@ -59,6 +60,23 @@ runs:
             exit 1
             ;;
         esac
+
+    - name: "Verify the date"
+      shell: bash
+      run: |
+        # Convert DD/MM/YYYY to YYYY-MM-DD
+        if [[ "$DATE" =~ ^[0-9]{2}/[0-9]{2}/[0-9]{4}$ ]]; then
+          DATE=$(echo "$DATE" | awk -F/ '{print $3"-"$2"-"$1}')
+        fi
+        
+        TODAY=$(date +%Y-%m-%d)
+        YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
+        TOMORROW=$(date -d "tomorrow" +%Y-%m-%d)
+
+        if [[ "$DATE" != "$TODAY" && "$DATE" != "$YESTERDAY" && "$DATE" != "$TOMORROW" ]]; then
+          echo "Date found in PackageInfo.g ($DATE) does not match current date (±1 day)."
+          exit 1
+        fi
 
     # We make a copy of the current directory to build the release from, because
     # the next step will remove files/folders that may be necessary for subsequent
