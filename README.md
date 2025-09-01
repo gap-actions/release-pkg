@@ -27,8 +27,10 @@ off using the `force` input.
    be done in a separate step in the release workflow, e.g. by the action
    [build-pkg-docs](https://github.com/gap-actions/update-gh-pages), as
    shown in the examples later in this document.
- - Release scripts **will not** be executed. This will have to happen
-   in a separate step in the release workflow, before this action.
+ - If your package has a `.release` script, this **will not** be executed.
+   Instead, add a separate step in your release workflow, before this action.
+   This step can either invoke your `.release` script, or you can copy the
+   content of that script into the step and delete the script afterwards.
  - The GitHub Pages **will not** be updated. This is now done by a separate
    action, [update-gh-pages](https://github.com/gap-actions/update-gh-pages).
    This is also demonstrated in the examples below.
