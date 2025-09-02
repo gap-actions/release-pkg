@@ -4,12 +4,41 @@ This GitHub action helps making releases of a GAP package.
 
 ## Usage
 
+Once this action has been properly set up in a GitHub Actions workflow
+for your GAP package (as described in the subsequent sections of this
+document), you can make a new release of your package by following
+these steps:
+
+1. Update the version and release date in `PackageInfo.g` and anywhere
+   else it appears (e.g. a changelog file).
+
+2. Navigate to the `Actions` tab of your package's GitHub repository.<br>
+   <img src="./images/make_release_step_1.png" width="560" alt="The Actions tab">
+
+3. On the left side is a list of all workflows configured for your package.
+   Locate the "Release" workflow and click on it.<br>
+   <img src="./images/make_release_step_2.png" width="560" alt="The link to the Release workflow">
+
+4. Now towards the right side of your browser window, a button "Run workflow"
+   should have appeared; click it.<br>
+   <img src="./images/make_release_step_3.png" width="560" alt="The first 'Run workflow' button">
+
+5. The click should have revealed a new box with a big green button also labelled
+   "Run workflow". Once again, click it.<br>
+   <img src="./images/make_release_step_4.png" width="560" alt="The second 'Run workflow' button">
+
+If everything is configured right, the new release of your package should
+appear on GitHub and your package's website within a few minutes.
+
+
+## Installation
+
 The action `release-pkg` has to be called by the workflow of a GAP
 package.
 It creates release archives and publishes them in a GitHub release.
 
-It is recommended to create a separate YML file inside the
-`.github/workflows` folder of your package, containing a workflow
+It is recommended to create a separate YAML file inside the
+`.github/workflows/` folder of your package, containing a workflow
 that calls this action. By setting the trigger to `workflow_dispatch`,
 you can then manually create a release from the "Actions" tab of your
 repository.
@@ -91,12 +120,12 @@ on:
   workflow_dispatch:
     inputs:
       dry-run:
-        description: "Set to true to create an archive containing the release instead of publishing it on GitHub"
+        description: "Only create an archive containing the release instead of publishing it on GitHub"
         type: boolean
         required: false
         default: false
       force:
-        description: "Set to true to allow this action to overwrite an existing release, and to make a release with an incorrect date"
+        description: "Allow overwriting an existing release, or making a release with an incorrect date"
         type: boolean
         required: false
         default: false
