@@ -132,7 +132,16 @@ runs:
           sh autogen.sh
           rm -rf autom4te.cache
         fi
-        
+
+    - name: "Check for symlinks"
+      shell: bash
+      working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
+      run : |
+        if find . -type l | grep -q .; then
+          echo "Symlinks detected"
+          exit 1
+        fi
+
     - name: "Create archives"
       shell: bash
       working-directory: ${{ runner.temp }}
