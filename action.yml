@@ -10,6 +10,10 @@ inputs:
     description: "Set to true to allow this action to overwrite an existing release, and to make a release with an incorrect date"
     required: false
     default: "false"
+  body-text:
+    description: "Body text for the new GitHub release that will appear on the package's GitHub Releases page"
+    required: false
+    default: "Release of ${{ github.event.repository.name }}"
 
 runs:
   using: "composite"
@@ -167,8 +171,8 @@ runs:
       uses: softprops/action-gh-release@v2
       if: ${{ inputs.dry-run == 'false' }}
       with:
-        body: "Release for ${{ env.PKGNAME }}"
         name: "${{ env.PKGNAME }} ${{ env.VERSION }}"
+        body: "${{ inputs.body-text }}"
         fail_on_unmatched_files: true
         tag_name: "${{ env.TAG }}"
         files: ${{ env.ASSETS }}/*
