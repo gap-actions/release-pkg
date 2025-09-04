@@ -31,6 +31,25 @@ runs:
         mkdir -p $ASSETS
         echo "ASSETS=$ASSETS" | tee -a "$GITHUB_ENV"
 
+    - name: "Build JSON package if necessary"
+      shell: bash
+      run: |
+        # set GAPROOT if necessary, for compat with setup-gap@v2
+        #GAPROOT=${GAPROOT-$HOME/gap}
+
+        # the following somewhat awkward `cd` invocation ensures
+        # compatibility with both GAP <= 4.11 (with package dir names like
+        # `pkg/json-1.2.3`) and GAP >= 4.12 (where it is `pkg/json`)
+        cd $GAPROOT/pkg/json || cd $GAPROOT/pkg/json-*
+        if [[ ! -f Makefile ]] ; then
+          #if [[ -f configure.ac ]] ; then
+          #  ./configure --with-gaproot=$GAPROOT
+          #else
+            ./configure $GAPROOT
+          #fi
+        fi
+        make -j$(nproc)
+
     - name: "Generate package-info.json"
       shell: bash
       run: |

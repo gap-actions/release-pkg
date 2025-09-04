@@ -105,8 +105,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: gap-actions/setup-gap@v2
-        with:
-          GAP_PKGS_TO_BUILD: json
       - uses: gap-actions/build-pkg-docs@v1
       - uses: gap-actions/release-pkg@v1
 ```
@@ -143,8 +141,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: gap-actions/setup-gap@v2
-        with:
-          GAP_PKGS_TO_BUILD: json
       - uses: gap-actions/build-pkg-docs@v1
         with:
           use-latex: true

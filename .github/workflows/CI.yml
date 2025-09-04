@@ -40,10 +40,8 @@ jobs:
         with:
           path: .this-action/
 
-      - name: "Setup GAP + json package"
+      - name: "Setup GAP"
         uses: gap-actions/setup-gap@v2
-        with:
-          GAP_PKGS_TO_BUILD: json
           
       - name: "Build manual"
         uses: gap-actions/build-pkg-docs@v1
