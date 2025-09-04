@@ -86,7 +86,7 @@ Examples of actual GAP packages using this action are
 #### Minimal example
 
 Below is a minimal example of a workflow using this action. It does the
-absolute minimum and for example do not update your package's website. For
+absolute minimum and for example does not update your package's website. For
 that, look at the next example.
 
 ```yaml
