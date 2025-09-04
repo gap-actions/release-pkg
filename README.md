@@ -83,9 +83,12 @@ Examples of actual GAP packages using this action are
 [aclib](https://github.com/gap-packages/aclib) and
 [polycyclic](https://github.com/gap-packages/polycyclic).
 
-Below is a minimal example of a workflow using this action.
-
 #### Minimal example
+
+Below is a minimal example of a workflow using this action. It does the
+absolute minimum and for example do not update your package's website. For
+that, look at the next example.
+
 ```yaml
 name: Release
 
@@ -152,6 +155,13 @@ jobs:
       - uses: gap-actions/update-gh-pages@v1
         if: ${{ !inputs.dry-run }}
 ```
+
+We recommend that you start with this example in your package and refine
+it as needed. For example you could insert an additional `run` step before
+`release-pkg` to perform additional work before creating the release archives,
+such as compressing data files (the smallgrp package does that in its
+[release workflow](https://github.com/gap-packages/smallgrp/blob/master/.github/workflows/release.yml)),
+or deleting files that should not end up in the release archives.
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
