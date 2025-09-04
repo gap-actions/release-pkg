@@ -14,7 +14,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-  
+
     - name: "Validate PackageInfo.g"
       shell: bash
       run: |
@@ -36,7 +36,7 @@ runs:
             exit 1
         fi
         mv package-info.json $ASSETS
-        
+
     - name: "Read data from package-info.json"
       shell: bash
       working-directory: ${{ env.ASSETS }}
@@ -107,11 +107,11 @@ runs:
       run: |
         mkdir -p "$RUNNER_TEMP/$BASENAME"
         cp -r * "$RUNNER_TEMP/$BASENAME"
-        
+
     - name: "Cleanup before making archives"
       shell: bash
       working-directory: ${{ runner.temp }}/${{ env.BASENAME }}
-      run: | 
+      run: |
          echo "::group:: Cleanup git and github related files"
          rm -rvf .git* .hg* .cvs* .circleci
          echo "::group:: Cleanup codecov, travis, azure-pipelines"
