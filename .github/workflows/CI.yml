@@ -35,7 +35,7 @@ jobs:
 
       - name: "Fake the package's date so it does not get rejected later on"
         shell: bash
-        if: ${{ matrix.package }} == "gap-actions/ActionTestOldDocPackage"
+        if: ${{ matrix.package == 'gap-actions/ActionTestOldDocPackage' }}
         run: |
           DATE=$(date +%d/%m/%Y)
           sed -i -E "s|(Date[[:space:]]*:?=[[:space:]]*['\"]).*(['\"])|\1${DATE}\2|" "PackageInfo.g"
@@ -57,7 +57,7 @@ jobs:
         uses: ./.this-action/
         with:
           dry-run: true
-          force: ${{ matrix.package }} == "gap-actions/ActionTestGAPDocPackage"
+          force: ${{ matrix.package == 'gap-actions/ActionTestGAPDocPackage' }}
 
   test-scripts:
     name: "Test the scripts used by this action"
@@ -67,6 +67,10 @@ jobs:
 
       - name: "Check out this repository"
         uses: actions/checkout@v5
+
+      - name: "Shellcheck"
+        shell: bash
+        run: shellcheck -o all *.sh
 
       - name: "Test check_filenames.sh"
         shell: bash
@@ -79,11 +83,11 @@ jobs:
           ../check_filenames.sh > $RUNNER_TEMP/filenames_run.txt || true # suppress expected error here
           diff $RUNNER_TEMP/filenames_run.txt - <<EOF
           Checking for Windows-incompatible names
-            Name ends with space or period: period.
-            Reserved Windows name: COM².tar.gz
-            Name ends with space or period: space 
-            Duplicate filename: DOC and doc
-            Reserved Windows name: AUX
-            Illegal character in name: \Users\GillBates
             Illegal character in name: :q
+            Reserved Windows name: AUX
+            Reserved Windows name: COM².tar.gz
+            Illegal character in name: \Users\GillBates
+            Duplicate filename: DOC and doc
+            Name ends with space or period: period.
+            Name ends with space or period: space 
           EOF
