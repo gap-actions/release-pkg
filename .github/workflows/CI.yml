@@ -14,16 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gap-version:
-          - master
-          - '4.14'
-          - '4.13'
-          - '4.12'
-          - '4.11'
-          - '4.10'
-        package:
-          - "gap-actions/ActionTestGAPDocPackage"
-          - "gap-actions/ActionTestOldDocPackage"
+        include:
+          - package: "gap-actions/ActionTestGAPDocPackage"
+            force: true
+          - package: "gap-actions/ActionTestOldDocPackage"
+            force: false
     
     steps:
       # the order of the checkout actions is important because all contents of
@@ -35,7 +30,7 @@ jobs:
 
       - name: "Fake the package's date so it does not get rejected later on"
         shell: bash
-        if: ${{ matrix.package == 'gap-actions/ActionTestOldDocPackage' }}
+        if: ${{ !matrix.force }}
         run: |
           DATE=$(date +%d/%m/%Y)
           sed -i -E "s|(Date[[:space:]]*:?=[[:space:]]*['\"]).*(['\"])|\1${DATE}\2|" "PackageInfo.g"
@@ -57,7 +52,7 @@ jobs:
         uses: ./.this-action/
         with:
           dry-run: true
-          force: ${{ matrix.package == 'gap-actions/ActionTestGAPDocPackage' }}
+          force: ${{ matrix.force }}
 
   test-scripts:
     name: "Test the scripts used by this action"
