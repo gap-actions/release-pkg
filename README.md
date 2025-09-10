@@ -104,8 +104,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: gap-actions/setup-gap@v2
-      - uses: gap-actions/build-pkg-docs@v1
+      - uses: gap-actions/setup-gap@v3
+      - uses: gap-actions/build-pkg-docs@v2
       - uses: gap-actions/release-pkg@v1
 ```
 
@@ -140,8 +140,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - uses: gap-actions/setup-gap@v2
-      - uses: gap-actions/build-pkg-docs@v1
+      - uses: gap-actions/setup-gap@v3
+      - uses: gap-actions/build-pkg-docs@v2
         with:
           use-latex: true
       - uses: gap-actions/release-pkg@v1

@@ -34,9 +34,6 @@ runs:
     - name: "Build JSON package if necessary"
       shell: bash
       run: |
-        # set GAPROOT if necessary, for compat with setup-gap@v2
-        #GAPROOT=${GAPROOT-$HOME/gap}
-
         # the following somewhat awkward `cd` invocation ensures
         # compatibility with both GAP <= 4.11 (with package dir names like
         # `pkg/json-1.2.3`) and GAP >= 4.12 (where it is `pkg/json`)
