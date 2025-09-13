@@ -132,15 +132,47 @@ here are a few notes that may be helpful.
    use your repository's `GITHUB_TOKEN`.
  - The documentation **will not** be compiled during this action. This must
    be done in a separate step in the release workflow, e.g. by the action
-   [build-pkg-docs](https://github.com/gap-actions/update-gh-pages), as
-   shown in the template `release.yml` elsewhere in this document.
+   [build-pkg-docs][3], as shown in the `release.yml` template elsewhere in
+   this document.
  - If your package has a `.release` script, this **will not** be executed.
    Instead, add a separate step in your release workflow, before this action.
    This step can either invoke your `.release` script, or you can copy the
    content of that script into the step and delete the script afterwards.
- - The GitHub Pages **will not** be updated. However this can be done by a separate
-   action, [update-gh-pages](https://github.com/gap-actions/update-gh-pages).
+ - The GitHub Pages **will not** be updated. However this can be done by the
+   [update-gh-pages](https://github.com/gap-actions/update-gh-pages) action.
    This is also demonstrated in the template.
+
+## What this action actually does
+
+This action takes the code for your package and turns it into an archive
+(tarball or zipfile) suitable for use by the GAP package distribution or
+GAP end users. It also uploads this archive to the GitHub release system,
+where it can be downloaded from.
+
+To do so, it extracts metadata of your package from the `PackageInfo.g` file:
+- The name that should be given to the release archives (from `ArchiveUrl`).
+- The git tag that should be used to create the release (from `ArchiveUrl`).
+- The name of the package (from `PackageName`). Used in the title of the release.
+- The version of the package (from `Version`). Used in the title of the release, and to prevent you from accidentally making a release with "dev" in the version string.
+- The archive formats that need to be created (from `ArchiveFormats`).
+- Which PDF files should be attached to the release (from `PackageDoc[].PDFFile`).
+- The date the package should be released (from `Date`). Used to prevent making a release on the wrong date, which usually indicates the author forgot to update this in `PackageInfo.g`.
+
+It also performs a series of additional sanity checks to catch mistakes. Any
+failures here generally abort the release with a suitable error:
+- As already stated, it checks that the date given in `PackageInfo.g` is
+  plausible (which should be the current date; but we accept the day before or
+  after as well to deal with edge cases)
+- It calls the GAP function `ValidatePackageInfo`.
+- It rejects all symlinks, and files with names causing issues on some systems.
+- It rejects two files in the same directory having names that are equal up to
+  case differences.
+
+In addition to uploading the archive to a GitHub release, this action also
+creates the necessary git tag, and uploads PDFs of all built package manuals.
+However, it does not compile your manual. this must be done in a separate step
+in the release workflow, e.g. by the action [build-pkg-docs][3], as shown in
+the `release.yml` template elsewhere in this document.
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
@@ -156,3 +188,4 @@ with this action or the FSF's own site.
 
 [1]: https://github.com/gap-system/ReleaseTools
 [2]: https://github.com/gap-actions/update-gh-pages
+[2]: https://github.com/gap-actions/build-pkg-docs
