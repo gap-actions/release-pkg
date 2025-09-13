@@ -1,6 +1,7 @@
 # release-pkg
 
 This GitHub action helps making releases of a GAP package.
+It creates release archives and publishes them in a GitHub release.
 
 ## Usage
 
@@ -31,89 +32,18 @@ If everything is configured right, the new release of your package should
 appear on GitHub and your package's website within a few minutes.
 
 
-## Installation
+## Initial setup
 
-The action `release-pkg` has to be called by the workflow of a GAP
-package.
-It creates release archives and publishes them in a GitHub release.
+The action `release-pkg` has to be called by a GitHub workflow of a GAP
+package. The recommend way to do that is to create a file `release.yml` in the
+`.github/workflows/` folder of your package repository.
 
-It is recommended to create a separate YAML file inside the
-`.github/workflows/` folder of your package, containing a workflow
-that calls this action. By setting the trigger to `workflow_dispatch`,
-you can then manually create a release from the "Actions" tab of your
-repository.
-
-By default, this action will fail if there already exists a release
-with the same version number, or if the date in `PackageInfo.g` is more
-than 1 day off from the current date. These safety checks can be turned
-off using the `force` input.
-
-### Migration from ReleaseTools
-
- - It is not necessary to provide a token. This action will automatically
-   use your repository's `GITHUB_TOKEN`.
- - The documentation **will not** be compiled during this action. This must
-   be done in a separate step in the release workflow, e.g. by the action
-   [build-pkg-docs](https://github.com/gap-actions/update-gh-pages), as
-   shown in the examples later in this document.
- - If your package has a `.release` script, this **will not** be executed.
-   Instead, add a separate step in your release workflow, before this action.
-   This step can either invoke your `.release` script, or you can copy the
-   content of that script into the step and delete the script afterwards.
- - The GitHub Pages **will not** be updated. This is now done by a separate
-   action, [update-gh-pages](https://github.com/gap-actions/update-gh-pages).
-   This is also demonstrated in the examples below.
-
-### Inputs
-
-All of the following inputs are optional.
-
-- `dry-run`:
-  - Set to `true` to create an archive containing the release
-    instead of publishing it on GitHub.
-  - default: `false`
-- `force`:
-  - Set to `true` to allow this action to overwrite an existing
-    release, and to make a release with an incorrect date
-  - default: `false`
-
-### Examples
-
-Examples of actual GAP packages using this action are
-[aclib](https://github.com/gap-packages/aclib) and
-[polycyclic](https://github.com/gap-packages/polycyclic).
-
-#### Minimal example
-
-Below is a minimal example of a workflow using this action. It does the
-absolute minimum and for example does not update your package's website. For
-that, look at the next example.
-
-```yaml
-name: Release
-
-on:
-  workflow_dispatch:
-
-permissions: write-all
-
-jobs:
-  release:
-    name: "Release the GAP package"
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v5
-      - uses: gap-actions/setup-gap@v3
-      - uses: gap-actions/build-pkg-docs@v2
-      - uses: gap-actions/release-pkg@v1
-```
-
-#### Larger example
-
-The following example adds a boolean input `dry-run` to test the release without actually publishing it on GitHub,
-and a second boolean input `force` to allow the workflow to overwrite an existing release.
-It also uses the `update-gh-pages` action to update the GitHub Pages of the package after making the release.
+Below we provide a template that you can use as-is in your package. You can
+also customize it to suite your specific needs. But for now, if you add and
+commit this as a file `.github/workflows/release.yml` to your repository
+(don't forget to also push it out to Github), you should immediately
+afterwards  be able to follow the instructions in the "Usage" section at the
+start of this document to make a release.
 ```yaml
 name: Release
 
@@ -152,12 +82,57 @@ jobs:
         if: ${{ !inputs.dry-run }}
 ```
 
-We recommend that you start with this example in your package and refine
+We recommend that you start with this template in your package and refine
 it as needed. For example you could insert an additional `run` step before
 `release-pkg` to perform additional work before creating the release archives,
-such as compressing data files (the smallgrp package does that in its
+such as compressing data files (the `smallgrp` package does that in its
 [release workflow](https://github.com/gap-packages/smallgrp/blob/master/.github/workflows/release.yml)),
 or deleting files that should not end up in the release archives.
+
+By default, this action will fail if there already exists a release
+with the same version number, or if the date in `PackageInfo.g` is more
+than 1 day off from the current date. These safety checks can be turned
+off using the `force` input.
+
+### Inputs
+
+All of the following inputs are optional.
+
+- `dry-run`:
+  - Set to `true` to *not* publish the archive this release creates as a GitHub
+    release. Useful for testing. (The created archive can still be downloaded
+    from the GitHub web interface if you navigate to the "Action" section and
+    from there to the relevant run of your workflow.)
+  - default: `false`
+- `force`:
+  - Set to `true` to allow this action to overwrite an existing
+    release, or to make a release with an incorrect date. Use with caution
+  - default: `false`
+
+### Examples
+
+Examples of actual GAP packages using this action include
+[aclib](https://github.com/gap-packages/aclib) and
+[polycyclic](https://github.com/gap-packages/polycyclic).
+
+### Migration from ReleaseTools
+
+If you have been using [ReleaseTools][1] so far to make releases of your package,
+here are a few notes that may be helpful.
+
+ - It is not necessary to provide a token. This action will automatically
+   use your repository's `GITHUB_TOKEN`.
+ - The documentation **will not** be compiled during this action. This must
+   be done in a separate step in the release workflow, e.g. by the action
+   [build-pkg-docs](https://github.com/gap-actions/update-gh-pages), as
+   shown in the template `release.yml` elsewhere in this document.
+ - If your package has a `.release` script, this **will not** be executed.
+   Instead, add a separate step in your release workflow, before this action.
+   This step can either invoke your `.release` script, or you can copy the
+   content of that script into the step and delete the script afterwards.
+ - The GitHub Pages **will not** be updated. However this can be done by a separate
+   action, [update-gh-pages](https://github.com/gap-actions/update-gh-pages).
+   This is also demonstrated in the template.
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
@@ -169,3 +144,6 @@ and/or modify it under the terms of the GNU General Public License as published
 by the Free Software Foundation; either version 2 of the License, or (at your
 opinion) any later version. For details, see the file `LICENSE` distributed
 with this action or the FSF's own site.
+
+
+[1]: https://github.com/gap-system/ReleaseTools
