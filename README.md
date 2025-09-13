@@ -42,8 +42,16 @@ Below we provide a template that you can use as-is in your package. You can
 also customize it to suite your specific needs. But for now, if you add and
 commit this as a file `.github/workflows/release.yml` to your repository
 (don't forget to also push it out to Github), you should immediately
-afterwards  be able to follow the instructions in the "Usage" section at the
+afterwards be able to follow the instructions in the "Usage" section at the
 start of this document to make a release.
+
+> [!CAUTION]
+> By default `update-gh-pages` regenerates the `gh-pages` branch of your
+> repository from scratch. If you made custom modifications to that branch,
+> you need to disable this behavior. Please consult [the documentation of
+> `update-gh-pages`][2] for details.
+
+
 ```yaml
 name: Release
 
@@ -147,3 +155,4 @@ with this action or the FSF's own site.
 
 
 [1]: https://github.com/gap-system/ReleaseTools
+[2]: https://github.com/gap-actions/update-gh-pages
