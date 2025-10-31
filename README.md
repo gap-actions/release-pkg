@@ -188,4 +188,4 @@ with this action or the FSF's own site.
 
 [1]: https://github.com/gap-system/ReleaseTools
 [2]: https://github.com/gap-actions/update-gh-pages
-[2]: https://github.com/gap-actions/build-pkg-docs
+[3]: https://github.com/gap-actions/build-pkg-docs
