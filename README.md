@@ -32,7 +32,7 @@ If everything is configured right, the new release of your package should
 appear on GitHub and your package's website within a few minutes.
 
 > [!CAUTION]
-> We strongly recommend a 'dry run' the first time you use this workflow.
+> We recommend a 'dry run' the first time you use this workflow.
 > This will create an archive containing the release, which can be downloaded under
 > the `Artifacts` in the relevant run of this workflow, but not actually publish the
 > release. You can then inspect the release archive and, if satisfactory, re-run this
