@@ -121,9 +121,12 @@ All of the following inputs are optional.
   - default: `false`
 - `force`:
   - Set to `true` to allow this action to overwrite an existing
-    release, or to make a release with an incorrect date. Use with caution
+    release, or to make a release with an incorrect date. Use with caution.
   - default: `false`
-
+- `body-text`: 
+  - Body text for the new GitHub release that will appear on the package's GitHub
+    Releases page.
+  - default: "Release of &lt;repository name&gt;"
 ### Examples
 
 Examples of actual GAP packages using this action include
