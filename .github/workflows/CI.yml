@@ -56,7 +56,7 @@ jobs:
 
   test-scripts:
     name: "Test the scripts used by this action"
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
 
     steps:
 
