@@ -229,13 +229,21 @@ runs:
     - name: "Copy body-text"
       if: ${{ inputs.dry-run == 'true' }}
       shell: bash
-      run: echo "${{ inputs.body-text }}" > $ASSETS/BODY.md
+      run: echo "${{ inputs.body-text }}" > $RUNNER_TEMP/Release_text_for_${PKGNAME}_${VERSION}.md
 
     - name: "Upload the release"
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       if: ${{ inputs.dry-run == 'true' }}
       with:
-        name: "Release_for_${{ env.PKGNAME }}_${{ env.VERSION }}"
+        name: "Release_assets_for_${{ env.PKGNAME }}_${{ env.VERSION }}.zip"
+        archive: true
         path: ${{ env.ASSETS }}/*
         if-no-files-found: error
-        overwrite: true  # necessary for release-pkg test suite
+
+    - name: "Upload the release"
+      uses: actions/upload-artifact@v7
+      if: ${{ inputs.dry-run == 'true' }}
+      with:
+        archive: false
+        path: ${{ runner.temp }}/Release_text_for_*.md
+        if-no-files-found: error
