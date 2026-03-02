@@ -231,7 +231,7 @@ runs:
       shell: bash
       run: echo "${{ inputs.body-text }}" > $RUNNER_TEMP/Release_text_for_${PKGNAME}_${VERSION}.md
 
-    - name: "Upload the release"
+    - name: "Upload the release assets"
       uses: actions/upload-artifact@v7
       if: ${{ inputs.dry-run == 'true' }}
       with:
@@ -240,7 +240,7 @@ runs:
         path: ${{ env.ASSETS }}/*
         if-no-files-found: error
 
-    - name: "Upload the release"
+    - name: "Upload the release text"
       uses: actions/upload-artifact@v7
       if: ${{ inputs.dry-run == 'true' }}
       with:
