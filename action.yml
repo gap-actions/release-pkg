@@ -227,7 +227,7 @@ runs:
         target_commitish: ${{ github.sha }}
 
     - name: "Upload the release"
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: ${{ inputs.dry-run == 'true' }}
       with:
         name: "Release_for_${{ env.PKGNAME }}_${{ env.VERSION }}"
