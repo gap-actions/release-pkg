@@ -139,7 +139,7 @@ runs:
       shell: bash
       run: |
         mkdir -p "$RUNNER_TEMP/$BASENAME"
-        cp -r * "$RUNNER_TEMP/$BASENAME"
+        cp -r . "$RUNNER_TEMP/$BASENAME"
 
     - name: "Cleanup before making archives"
       shell: bash
