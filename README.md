@@ -155,35 +155,87 @@ here are a few notes that may be helpful.
 
 ## What this action actually does
 
-This action takes the code for your package and turns it into an archive
-(tarball or zipfile) suitable for use by the GAP package distribution or
-GAP end users. It also uploads this archive to the GitHub release system,
-where it can be downloaded from.
+This action creates release archives for a GAP package and either
 
-To do so, it extracts metadata of your package from the `PackageInfo.g` file:
-- The name that should be given to the release archives (from `ArchiveUrl`).
-- The git tag that should be used to create the release (from `ArchiveUrl`).
-- The name of the package (from `PackageName`). Used in the title of the release.
-- The version of the package (from `Version`). Used in the title of the release, and to prevent you from accidentally making a release with "dev" in the version string.
-- The archive formats that need to be created (from `ArchiveFormats`).
-- Which PDF files should be attached to the release (from `PackageDoc[].PDFFile`).
-- The date the package should be released (from `Date`). Used to prevent making a release on the wrong date, which usually indicates the author forgot to update this in `PackageInfo.g`.
+- uploads them, together with the package manuals, to a GitHub release; or
+- in dry-run mode, stores the same files as a workflow artifact instead.
 
-It also performs a series of additional sanity checks to catch mistakes. Any
-failures here generally abort the release with a suitable error:
-- As already stated, it checks that the date given in `PackageInfo.g` is
-  plausible (which should be the current date; but we accept the day before or
-  after as well to deal with edge cases)
-- It calls the GAP function `ValidatePackageInfo`.
-- It rejects all symlinks, and files with names causing issues on some systems.
-- It rejects two files in the same directory having names that are equal up to
-  case differences.
+### Metadata read from `PackageInfo.g`
 
-In addition to uploading the archive to a GitHub release, this action also
-creates the necessary git tag, and uploads PDFs of all built package manuals.
-However, it does not compile your manual. this must be done in a separate step
-in the release workflow, e.g. by the action [build-pkg-docs][3], as shown in
-the `release.yml` template elsewhere in this document.
+The action reads `PackageInfo.g`, converts it to JSON, and uses the following
+fields:
+
+- `ArchiveURL`: this must point to a GitHub release download URL of the form
+  `https://github.com/<owner>/<repo>/releases/download/<tag>/<basename>`.
+  The action extracts both the release tag (`<tag>`) and the archive base name
+  (`<basename>`) from this URL.
+- `PackageName`: used for the GitHub release title and dry-run artifact names.
+- `Version`: used for the GitHub release title and dry-run artifact names.
+  Versions ending in `dev` are rejected.
+- `ArchiveFormats`: decides which archives are created. The action supports
+  `.tar.gz`, `.tar.bz2`, and `.zip`.
+- `PackageDoc[].PDFFile`: each listed PDF is copied into the release assets.
+- `Date`: checked against the current date, unless `force: true` is used.
+
+### Checks performed before creating archives
+
+Before packaging, the action
+
+- validates the `dry-run` and `force` inputs;
+- runs `ValidatePackageInfo("PackageInfo.g")` in GAP;
+- rejects HTML documentation containing absolute links such as
+  `href="/..."` or `href="file:/..."`;
+- checks whether the release tag already exists on GitHub and refuses to
+  overwrite it unless `force: true` is set;
+- checks that `Date` matches today, yesterday, or tomorrow;
+- rejects symlinks anywhere in the packaged tree;
+- rejects Windows-incompatible file names, including reserved device names,
+  names ending in a space or period, illegal characters, and case-only name
+  clashes.
+
+### Files that go into the release archives
+
+The action first copies the package tree to a temporary directory and builds the
+release from that copy. This is deliberate, so later workflow steps still see
+the original checkout unchanged.
+
+The copy step uses `cp -r . ...`, so top-level dotfiles and dot-directories are
+copied into the temporary release tree as well.
+
+After copying, the action removes some release-irrelevant files from the copied
+tree if they are present there, including version-control metadata, common CI
+configuration files such as `.circleci`, `.codecov.*`, `.travis.*`,
+`.appveyor.*`, `azure-pipelines.*`, `.this-action*`, `.gaplint.*`,
+`requirements.txt`, and macOS `.DS_Store` files. This cleanup removes those
+selected top-level dotfiles and directories again before the final archives are
+created.
+
+### `autogen.sh`
+
+If the copied package contains an executable `autogen.sh`, the action installs
+`autoconf`, `automake`, and `build-essential` via `apt-get`, runs
+`sh autogen.sh`, and then removes `autom4te.cache`.
+
+### Outputs and publication
+
+For each format listed in `ArchiveFormats`, the action creates an archive named
+`<basename><extension>` using the basename extracted from `ArchiveURL`.
+
+If `dry-run: false` (the default), the action creates or updates a GitHub
+release in the same repository, using the extracted tag, and uploads all
+generated archives plus the manual PDFs as release assets.
+
+If `dry-run: true`, the action does not publish a GitHub release. Instead, it
+uploads the generated archives, manual PDFs, and the supplied `body-text` as a
+workflow artifact.
+
+This action does not build package manuals; do that in a separate workflow step,
+for example via [build-pkg-docs][3].
+
+This action also does not update a package website or `gh-pages` branch. That
+is intentional: website publication is handled separately by
+[update-gh-pages][2], so packages with custom hosting or custom website steps
+can keep full control over that part of the release process.
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
