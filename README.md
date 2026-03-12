@@ -163,7 +163,7 @@ This action creates release archives for a GAP package and either
 ### Metadata read from `PackageInfo.g`
 
 The action reads `PackageInfo.g`, converts it to JSON, and uses the following
-fields:
+fields. The resulting `package-info.json` is also kept as a release asset:
 
 - `ArchiveURL`: this must point to a GitHub release download URL of the form
   `https://github.com/<owner>/<repo>/releases/download/<tag>/<basename>`.
@@ -205,10 +205,11 @@ copied into the temporary release tree as well.
 After copying, the action removes some release-irrelevant files from the copied
 tree if they are present there, including version-control metadata, common CI
 configuration files such as `.circleci`, `.codecov.*`, `.travis.*`,
-`.appveyor.*`, `azure-pipelines.*`, `.this-action*`, `.gaplint.*`,
-`requirements.txt`, and macOS `.DS_Store` files. This cleanup removes those
-selected top-level dotfiles and directories again before the final archives are
-created.
+`.appveyor.*`, `azure-pipelines.*`, `.gaplint.*`, `requirements.txt`,
+and macOS `.DS_Store` files.
+This list is not meant to be exhaustive; for the exact cleanup commands, see
+[`action.yml`](./action.yml). The cleanup removes such selected top-level
+dotfiles and directories again before the final archives are created.
 
 ### `autogen.sh`
 
@@ -223,19 +224,24 @@ For each format listed in `ArchiveFormats`, the action creates an archive named
 
 If `dry-run: false` (the default), the action creates or updates a GitHub
 release in the same repository, using the extracted tag, and uploads all
-generated archives plus the manual PDFs as release assets.
+generated archives, the generated `package-info.json`, and the manual PDFs as
+release assets.
 
 If `dry-run: true`, the action does not publish a GitHub release. Instead, it
-uploads the generated archives, manual PDFs, and the supplied `body-text` as a
-workflow artifact.
+uploads the generated archives, the generated `package-info.json`, the manual
+PDFs, and the supplied `body-text` as a workflow artifact.
 
-This action does not build package manuals; do that in a separate workflow step,
-for example via [build-pkg-docs][3].
+This action does not build package manuals; do that in a prior workflow step,
+for example via [build-pkg-docs][3], because this action assumes the manuals
+already exist when it copies the PDF files into the release assets.
 
 This action also does not update a package website or `gh-pages` branch. That
 is intentional: website publication is handled separately by
 [update-gh-pages][2], so packages with custom hosting or custom website steps
-can keep full control over that part of the release process.
+can keep full control over that part of the release process. In the standard
+workflow shown above, `release-pkg` runs before `update-gh-pages`, and a
+successful package release is therefore a prerequisite for publishing the
+updated package website.
 
 ## Contact
 Please submit bug reports, suggestions for improvements and patches via
