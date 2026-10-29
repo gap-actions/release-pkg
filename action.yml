@@ -151,17 +151,21 @@ runs:
       run: |
         echo "::group::Cleanup git and github related files"
         rm -rvf .git* .hg* .cvs* .circleci
+        echo "::endgroup::"
 
         echo "::group::Cleanup CI/action related files"
         rm -rvf .this-action*
+        echo "::endgroup::"
         
         echo "::group::Cleanup codecov, travis, azure-pipelines"
         rm -fv .codecov.* .travis.* .appveyor.* azure-pipelines.*
         rm -fv .gaplint.*
         rm -fv requirements.txt
+        echo "::endgroup::"
 
         echo "::group::Cleanup macOS metadata"
         find . -name .DS_Store -exec rm -f {} +
+        echo "::endgroup::"
 
     - name: "Run autogen.sh"
       shell: bash
